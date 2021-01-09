@@ -9,7 +9,6 @@ import (
     "os"
     "net/http"
 		"time"
-		"mime/multipart"
 		"image"
 	//	"encoding/json"
 
@@ -18,11 +17,7 @@ import (
     "go.mongodb.org/mongo-driver/mongo/gridfs"
 		"go.mongodb.org/mongo-driver/mongo/options"
 		"github.com/gorilla/mux"
-	//	"github.com/SalikChodhary/shopify-challenge/models"
-		"github.com/aws/aws-sdk-go/aws"
-		"github.com/aws/aws-sdk-go/aws/credentials"
-	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/s3"
+		"github.com/SalikChodhary/shopify-challenge/services"
 )
 
 func InitiateMongoClient() *mongo.Client {
@@ -94,36 +89,30 @@ func DownloadFile(fileName string) {
 
 }
 
-func uploadFileToS3(s *session.Session, file multipart.File, fileHeader *multipart.FileHeader) (string, error) {
-	size := fileHeader.Size
-  buffer := make([]byte, size)
-	file.Read(buffer)
-	println(http.DetectContentType(buffer))
+// func uploadFileToS3(s *session.Session, file multipart.File, fileHeader *multipart.FileHeader) (string, error) {
+// 	size := fileHeader.Size
+//   buffer := make([]byte, size)
+// 	file.Read(buffer)
+// 	println(http.DetectContentType(buffer))
 	
-	_, err := s3.New(s).PutObject(&s3.PutObjectInput{
-		Bucket:               aws.String("salik-test-bucket"),
-		Key:                  aws.String(fileHeader.Filename),
-		ACL:                  aws.String("public-read"),// could be private if you want it to be access by only authorized users
-		Body:                 bytes.NewReader(buffer),
-		ContentLength:        aws.Int64(int64(size)),
-		 ContentType:        	aws.String(http.DetectContentType(buffer)),
-		ServerSideEncryption: aws.String("AES256"),
-		StorageClass:         aws.String("INTELLIGENT_TIERING"),
- })
- if err != nil {
-	return "", err
-}
+// 	_, err := s3.New(s).PutObject(&s3.PutObjectInput{
+// 		Bucket:               aws.String("salik-test-bucket"),
+// 		Key:                  aws.String(fileHeader.Filename),
+// 		ACL:                  aws.String("public-read"),// could be private if you want it to be access by only authorized users
+// 		Body:                 bytes.NewReader(buffer),
+// 		ContentLength:        aws.Int64(int64(size)),
+// 		 ContentType:        	aws.String(http.DetectContentType(buffer)),
+// 		ServerSideEncryption: aws.String("AES256"),
+// 		StorageClass:         aws.String("INTELLIGENT_TIERING"),
+//  })
+//  if err != nil {
+// 	return "", err
+// }
 
-return fileHeader.Filename, err
-}
+// return fileHeader.Filename, err
+// }
 
 func tempPost(w http.ResponseWriter, r *http.Request) {
-	// body, err := ioutil.ReadAll(r.Body)
-	// if err != nil {
-	// 	println(err)
-	// }
-	// println(body)
-	//var image models.Image
 
 	r.ParseMultipartForm(int64(2048000))
 
@@ -143,33 +132,24 @@ func tempPost(w http.ResponseWriter, r *http.Request) {
     w.Write([]byte("could not decode body image"))
     return
 	}
-	s, err := session.NewSession(&aws.Config{
-		Region: aws.String("us-east-2"),
-		Credentials: credentials.NewStaticCredentials(
-			"AKIA4HC7N7LSXF3OUOOY", // id
-			"+fJg8oqmYCS1od/XvfHkWVbeOG1qhl1ol6DGBkbE",   // secret
-			""),  // token can be left blank for now
-		})
+
+	err = services.InitS3Instance()
+
 	if err != nil {
 		fmt.Fprintf(w, "Could not upload file")
 	}
 
-	fileName, err := uploadFileToS3(s, file, fileHeader)
+	err = services.UploadFileToS3(file, fileHeader)
+
 	if err != nil {
 		fmt.Fprintf(w, "Could not upload file")
 	}
 
-	fmt.Fprintf(w, "Image uploaded successfully: %v", fileName)
+	fmt.Fprintf(w, "Image uploaded successfully.")
 
 }
 
 func main() {
-    // Get os.Args values
-    // file := os.Args[1] //os.Args[1] = testfile.zip
-    // filename := path.Base(file)
-    // UploadFile(file, filename)
-    // Uncomment the below line and comment the UploadFile above this line to download the file
-		// DownloadFile(filename)
 		router := mux.NewRouter()
 		router.HandleFunc("/api/post", tempPost).Methods("POST")
 		log.Fatal(http.ListenAndServe(":8000", router))
