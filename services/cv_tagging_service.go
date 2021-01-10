@@ -5,7 +5,7 @@ import(
 	vision "cloud.google.com/go/vision/apiv1"
 )
 
-func GetImageTags(s3URI string) ([]string, error) {
+func getImageTags(s3URI string) ([]string, error) {
 	var res []string
 
 	ctx := context.Background()

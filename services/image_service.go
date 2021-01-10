@@ -1,6 +1,7 @@
 package services
 
 import (
+	"github.com/pkg/errors"
 	"log"
 	"net/http"
 	"mime/multipart"
@@ -42,4 +43,18 @@ func InitImageStruct(r *http.Request, file multipart.File, header *multipart.Fil
 	img.Tags = []string{"no", "tags"}
 
 	return img
+}
+
+func AppendAutoTagsToImage(img *models.Image) error {
+	s3URI := "https://salik-test-bucket.s3.us-east-2.amazonaws.com/" + img.Key
+	tags, err := getImageTags(s3URI)
+
+	if err != nil {
+		return errors.New(err.Error())
+	}
+
+	for _, tag := range tags {
+		img.Tags = append(img.Tags, tag)
+	}
+	return nil
 }

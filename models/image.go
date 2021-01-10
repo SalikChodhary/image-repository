@@ -8,6 +8,6 @@ type Image struct {
 	Key string `json:"key,omitempty" bson:"key,omitempty"`
 	Tags []string `json:"tags,omitempty" bson:"tags,omitempty"`
 	Owner string `json:"owner,omitempty" bson:"owner,omitempty"`//change to user later
-	Private bool `json:"private,omitempty" bson:"private,omitempty"`
+	Private bool `json:"private" bson:"private"`
 
 }
