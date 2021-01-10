@@ -39,7 +39,7 @@ func InitImageStruct(r *http.Request, file multipart.File, header *multipart.Fil
 	img.Key = uuid
 	img.Owner = "admin"
 	img.Private = false
-	img.Tags = "no,tags"
+	img.Tags = []string{"no", "tags"}
 
 	return img
 }

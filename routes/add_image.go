@@ -35,6 +35,8 @@ func AddImage(w http.ResponseWriter, r *http.Request) {
 	// }
 
 	err = services.UploadFileToS3(file, fileHeader, image.Key)
+	
+	
 
 	if err != nil {
 		fmt.Fprintf(w, "Could not upload file")
