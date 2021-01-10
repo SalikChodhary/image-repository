@@ -34,7 +34,7 @@ func initS3Session()  {
 	})
 }
 
-func UploadFileToS3(file multipart.File, fileHeader *multipart.FileHeader) error {
+func UploadFileToS3(file multipart.File, fileHeader *multipart.FileHeader, key string) error {
 	size := fileHeader.Size
   buffer := make([]byte, size)
 	file.Read(buffer)
@@ -42,7 +42,7 @@ func UploadFileToS3(file multipart.File, fileHeader *multipart.FileHeader) error
 	
 	_, err := s3.New(instance).PutObject(&s3.PutObjectInput{
 		Bucket:               aws.String("salik-test-bucket"),
-		Key:                  aws.String(fileHeader.Filename),
+		Key:                  aws.String(key),
 		ACL:                  aws.String("public-read"),// could be private if you want it to be access by only authorized users
 		Body:                 bytes.NewReader(buffer),
 		ContentLength:        aws.Int64(int64(size)),

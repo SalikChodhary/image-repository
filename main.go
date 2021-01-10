@@ -9,7 +9,6 @@ import (
     "os"
     "net/http"
 		"time"
-		"image"
 	//	"encoding/json"
 
     "go.mongodb.org/mongo-driver/bson"
@@ -17,6 +16,7 @@ import (
     "go.mongodb.org/mongo-driver/mongo/gridfs"
 		"go.mongodb.org/mongo-driver/mongo/options"
 		"github.com/gorilla/mux"
+		"github.com/SalikChodhary/shopify-challenge/routes"
 		"github.com/SalikChodhary/shopify-challenge/services"
 )
 
@@ -112,45 +112,9 @@ func DownloadFile(fileName string) {
 // return fileHeader.Filename, err
 // }
 
-func tempPost(w http.ResponseWriter, r *http.Request) {
-
-	r.ParseMultipartForm(int64(2048000))
-
-	file, fileHeader, err := r.FormFile("img")
-
-  if err != nil{
-    log.Print(err)
-		w.WriteHeader(http.StatusBadRequest)
-    return
-	}
-	
-	_, _, err = image.Decode(file)
-  if err != nil {
-    log.Printf("could not decode body into an image")
-    w.Header().Add("Access-Control-Allow-Origin", "*")
-    w.WriteHeader(http.StatusBadRequest)
-    w.Write([]byte("could not decode body image"))
-    return
-	}
-
-	err = services.InitS3Instance()
-
-	if err != nil {
-		fmt.Fprintf(w, "Could not upload file")
-	}
-
-	err = services.UploadFileToS3(file, fileHeader)
-
-	if err != nil {
-		fmt.Fprintf(w, "Could not upload file")
-	}
-
-	fmt.Fprintf(w, "Image uploaded successfully.")
-
-}
-
 func main() {
 		router := mux.NewRouter()
-		router.HandleFunc("/api/post", tempPost).Methods("POST")
+		services.InitServices()
+		router.HandleFunc("/api/v1/add", routes.AddImage).Methods("POST")
 		log.Fatal(http.ListenAndServe(":8000", router))
 }
