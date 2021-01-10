@@ -9,6 +9,7 @@ import (
 	"github.com/SalikChodhary/shopify-challenge/models"
 	// "go.mongodb.org/mongo-driver/x/mongo/driver/uuid"
 	"github.com/google/uuid"
+	"strings"
 )
 
 const (
@@ -18,8 +19,6 @@ const (
 
 func ParseImageDataFromRequest(r *http.Request) (multipart.File, *multipart.FileHeader, error) {
 	r.ParseMultipartForm(int64(maxSize))
-
-
 
 	return r.FormFile(formDataImageKey)
 }
@@ -34,13 +33,31 @@ func IsValidImage(f multipart.File) bool {
 }
 
 func InitImageStruct(r *http.Request, file multipart.File, header *multipart.FileHeader) models.Image {
+	m := make(map[string]bool)
+	m["true"] = true
+	m["false"] = false
 	bytes, _ := uuid.NewRandom()
 	uuid := bytes.String()
+	isPrivateStr := r.FormValue("private")
+	tags := strings.Split(r.FormValue("tags"), ",")
+
 	var img models.Image
 	img.Key = uuid
 	img.Owner = "admin"
-	img.Private = false
-	img.Tags = []string{"no", "tags"}
+	img.Tags = tags
+
+	if isPrivateStr == "" {
+		img.Private = false
+		return img
+	}
+	
+	isPrivate, valid := m[isPrivateStr]
+
+	if !valid {
+		img.Private = false
+	} else {
+		img.Private = isPrivate
+	}
 
 	return img
 }

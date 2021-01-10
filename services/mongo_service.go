@@ -31,3 +31,11 @@ func InitiateMongoClient() (error) {
 func InsertNewImageToMongo(img models.Image) {
 	collection.InsertOne(context.TODO(), img)
 }
+
+func SearchImageByID(id string) {
+
+}
+
+func SearchImageByTags(tags string) {
+	
+}

@@ -14,5 +14,6 @@ func main() {
 		router := mux.NewRouter()
 		services.InitServices()
 		router.HandleFunc("/api/v1/add", routes.AddImage).Methods("POST")
+		router.HandleFunc("/api/v1/search", routes.SearchImage).Methods("GET")
 		log.Fatal(http.ListenAndServe(":8000", router))
 }
