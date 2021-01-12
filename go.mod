@@ -5,6 +5,7 @@ go 1.15
 require (
 	cloud.google.com/go v0.74.0
 	github.com/aws/aws-sdk-go v1.36.23
+	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/google/uuid v1.1.4
 	github.com/gorilla/mux v1.8.0
 	github.com/pkg/errors v0.9.1

@@ -15,5 +15,7 @@ func main() {
 		services.InitServices()
 		router.HandleFunc("/api/v1/add", routes.AddImage).Methods("POST")
 		router.HandleFunc("/api/v1/search", routes.SearchImage).Methods("GET")
+		router.HandleFunc("/login", routes.Login).Methods("POST")
+	
 		log.Fatal(http.ListenAndServe(":8000", router))
 }
