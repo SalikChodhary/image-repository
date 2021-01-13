@@ -41,9 +41,14 @@ func InitImageStruct(r *http.Request, file multipart.File, header *multipart.Fil
 	isPrivateStr := r.FormValue("private")
 	tags := strings.Split(r.FormValue("tags"), ",")
 
+	username := getUserFromHeader(r)
+
+	u, _ := IsExistingUsername(username)
+
+
 	var img models.Image
 	img.Key = uuid
-	img.Owner = "admin"
+	img.Owner = u.ID
 	img.Tags = tags
 
 	if isPrivateStr == "" {
