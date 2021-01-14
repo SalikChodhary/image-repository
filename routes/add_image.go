@@ -1,9 +1,8 @@
 package routes
 
 import (
-	"fmt"
 	"net/http"
-	"log"
+
 	"github.com/SalikChodhary/shopify-challenge/services"
 )
 
@@ -13,20 +12,23 @@ func AddImage(w http.ResponseWriter, r *http.Request) {
 	image := services.InitImageStruct(r, file, fileHeader)
 
   if err != nil{
-    log.Print(err)
-		w.WriteHeader(http.StatusBadRequest)
+		services.SendRespone(services.Error, err.Error(), http.StatusBadRequest, w)
     return
 	}
 
 	err = services.UploadFileToS3(file, fileHeader, image.Key)
 
 	if err != nil {
-		fmt.Fprintf(w, "Could not upload file")
+		services.SendRespone(services.Error, "could not upload file", http.StatusInternalServerError, w)
 		return
 	}
 
 	err = services.AppendAutoTagsToImage(&image)
-	services.InsertNewImageToMongo(image)
+	res, err := services.InsertNewImageToMongo(image)
 
-	fmt.Fprintf(w, "Image uploaded successfully.")
+	if err != nil {
+		services.SendRespone(services.Error, "could not upload file", http.StatusInternalServerError, w)
+	}
+
+	services.SendRespone(services.Success, string(res), http.StatusOK, w)
 }

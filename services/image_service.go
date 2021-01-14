@@ -1,15 +1,18 @@
 package services
 
 import (
-	"github.com/pkg/errors"
-	"log"
-	"net/http"
-	"mime/multipart"
 	"image"
+	"log"
+	"mime/multipart"
+	"net/http"
+
 	"github.com/SalikChodhary/shopify-challenge/models"
+	"github.com/pkg/errors"
+
 	// "go.mongodb.org/mongo-driver/x/mongo/driver/uuid"
-	"github.com/google/uuid"
 	"strings"
+
+	"github.com/google/uuid"
 )
 
 const (
@@ -41,14 +44,14 @@ func InitImageStruct(r *http.Request, file multipart.File, header *multipart.Fil
 	isPrivateStr := r.FormValue("private")
 	tags := strings.Split(r.FormValue("tags"), ",")
 
-	username := getUserFromHeader(r)
+	username := GetUserFromHeader(r)
 
-	u, _ := IsExistingUsername(username)
+	// u, _ := IsExistingUsername(username)
 
 
 	var img models.Image
 	img.Key = uuid
-	img.Owner = u.ID
+	img.Owner = username
 	img.Tags = tags
 
 	if isPrivateStr == "" {

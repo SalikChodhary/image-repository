@@ -1,16 +1,73 @@
 package routes
 
 import (
-	"net/http"
 	"encoding/json"
+	"net/http"
+
 	"github.com/SalikChodhary/shopify-challenge/models"
 	"github.com/SalikChodhary/shopify-challenge/services"
-	"log"
 )
 
 var searchTypes map[string]struct{} = map[string]struct{}{
 	"by_id": struct{}{}, 
 	"by_tags": struct{}{},
+	"by_user": struct{}{},
+	"all": struct{}{},
+}
+
+func sendResponse(res interface{}, w http.ResponseWriter) {
+	j, err := json.Marshal(res)
+
+	if err != nil {
+		services.SendRespone(services.Error, "internal error", http.StatusInternalServerError, w)
+		return
+	}
+
+	services.SendRespone(services.Success, string(j), http.StatusOK, w)
+}
+
+func handleByIDRequest(id string, user string, w http.ResponseWriter)  {
+	res, err := services.SearchImageByID(id, user)
+
+	if err != nil {
+		services.SendRespone(services.Error, "no image found", http.StatusNoContent, w)
+		return 
+	}
+
+	sendResponse(res, w)
+}
+
+func handleByTagsRequest(tags []string, user string, w http.ResponseWriter) {
+	res, err := services.SearchImageByTags(tags, user)
+
+	if err != nil {
+		services.SendRespone(services.Error, "no image found", http.StatusNoContent, w)
+		return 
+	}
+
+	sendResponse(res, w)
+}
+
+func handleByUserRequest(requestingUser string, requestedUser string, w http.ResponseWriter) {
+	res, err := services.SearchImageByUser(requestingUser, requestedUser)
+
+	if err != nil {
+		services.SendRespone(services.Error, "no image found", http.StatusNoContent, w)
+		return 
+	}
+
+	sendResponse(res, w)
+}
+
+func handleGetAllRequest(user string, w http.ResponseWriter) {
+	res, err := services.GetAllImages(user)
+
+	if err != nil {
+		services.SendRespone(services.Error, "no image found", http.StatusNoContent, w)
+		return 
+	}
+
+	sendResponse(res, w)
 }
 
 func SearchImage(w http.ResponseWriter, r *http.Request) {
@@ -20,23 +77,28 @@ func SearchImage(w http.ResponseWriter, r *http.Request) {
 	err := decoder.Decode(&searchRequest)
 
 	if err != nil {
-		log.Print(err)
-		w.WriteHeader(http.StatusBadRequest)
+		services.SendRespone(services.Error, err.Error(), http.StatusBadRequest, w)
+		return
 	}
 
 	_, isValidSearchType := searchTypes[searchRequest.Type]
 
 	if !isValidSearchType {
-		log.Print("Invalid search type")
-		w.WriteHeader(http.StatusBadRequest)
+		services.SendRespone(services.Error, "invalid search type", http.StatusBadRequest, w)
+		return
 	}
 
 	searchType := searchRequest.Type
+	user := services.GetUserFromHeader(r)
 
 	if searchType == "by_id" {
-		services.SearchImageByID(searchRequest.QueryID)
-	} else {
-		services.SearchImageByTags(searchRequest.QueryTags)
+		handleByIDRequest(searchRequest.QueryID, user, w)
+	} else if searchType == "by_tags" {
+		handleByTagsRequest(searchRequest.QueryTags, user, w)
+	} else if searchType == "by_user" {
+		handleByUserRequest(searchRequest.QueryUser, user, w)
+	} else { 
+		handleGetAllRequest(user, w)
 	}
 	
 }
