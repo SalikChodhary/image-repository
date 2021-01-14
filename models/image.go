@@ -5,5 +5,5 @@ type Image struct {
 	Tags []string `json:"tags,omitempty" bson:"tags,omitempty"`
 	Owner string `json:"owner,omitempty" bson:"owner,omitempty"`//change to user later
 	Private bool `json:"private" bson:"private"`
-
+	URI string `json:"uri,omitempty" bson"uri,omitempty"`
 }

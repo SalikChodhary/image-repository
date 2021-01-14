@@ -1,7 +1,9 @@
 package services
 
-import(
+import (
 	"context"
+	"strings"
+
 	vision "cloud.google.com/go/vision/apiv1"
 )
 
@@ -22,7 +24,7 @@ func getImageTags(s3URI string) ([]string, error) {
 	}
 
 	for _, annotation := range annotations {
-		res = append(res, annotation.Description)
+		res = append(res, strings.ToLower(annotation.Description))
 	}
 
 	return res, nil

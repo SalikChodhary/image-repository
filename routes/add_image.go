@@ -12,14 +12,14 @@ func AddImage(w http.ResponseWriter, r *http.Request) {
 	image := services.InitImageStruct(r, file, fileHeader)
 
   if err != nil{
-		services.SendRespone(services.Error, err.Error(), http.StatusBadRequest, w)
+		services.SendResponse(services.Error, err.Error(), http.StatusBadRequest, w)
     return
 	}
 
 	err = services.UploadFileToS3(file, fileHeader, image.Key)
 
 	if err != nil {
-		services.SendRespone(services.Error, "could not upload file", http.StatusInternalServerError, w)
+		services.SendResponse(services.Error, "could not upload file", http.StatusInternalServerError, w)
 		return
 	}
 
@@ -27,8 +27,8 @@ func AddImage(w http.ResponseWriter, r *http.Request) {
 	res, err := services.InsertNewImageToMongo(image)
 
 	if err != nil {
-		services.SendRespone(services.Error, "could not upload file", http.StatusInternalServerError, w)
+		services.SendResponse(services.Error, "could not upload file", http.StatusInternalServerError, w)
 	}
 
-	services.SendRespone(services.Success, string(res), http.StatusOK, w)
+	services.SendResponse(services.Success, string(res), http.StatusOK, w)
 }

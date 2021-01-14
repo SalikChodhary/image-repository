@@ -2,6 +2,7 @@ package routes
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"github.com/SalikChodhary/shopify-challenge/models"
@@ -19,18 +20,19 @@ func sendResponse(res interface{}, w http.ResponseWriter) {
 	j, err := json.Marshal(res)
 
 	if err != nil {
-		services.SendRespone(services.Error, "internal error", http.StatusInternalServerError, w)
+		services.SendResponse(services.Error, "internal error", http.StatusInternalServerError, w)
 		return
 	}
+	fmt.Println(string(j))
 
-	services.SendRespone(services.Success, string(j), http.StatusOK, w)
+	services.SendResponse(services.Success, string(j), http.StatusOK, w)
 }
 
 func handleByIDRequest(id string, user string, w http.ResponseWriter)  {
 	res, err := services.SearchImageByID(id, user)
 
 	if err != nil {
-		services.SendRespone(services.Error, "no image found", http.StatusNoContent, w)
+		services.SendResponse(services.Error, "no image found", http.StatusNoContent, w)
 		return 
 	}
 
@@ -41,7 +43,7 @@ func handleByTagsRequest(tags []string, user string, w http.ResponseWriter) {
 	res, err := services.SearchImageByTags(tags, user)
 
 	if err != nil {
-		services.SendRespone(services.Error, "no image found", http.StatusNoContent, w)
+		services.SendResponse(services.Error, "no image found", http.StatusNoContent, w)
 		return 
 	}
 
@@ -52,7 +54,7 @@ func handleByUserRequest(requestingUser string, requestedUser string, w http.Res
 	res, err := services.SearchImageByUser(requestingUser, requestedUser)
 
 	if err != nil {
-		services.SendRespone(services.Error, "no image found", http.StatusNoContent, w)
+		services.SendResponse(services.Error, "no image found", http.StatusNoContent, w)
 		return 
 	}
 
@@ -63,7 +65,7 @@ func handleGetAllRequest(user string, w http.ResponseWriter) {
 	res, err := services.GetAllImages(user)
 
 	if err != nil {
-		services.SendRespone(services.Error, "no image found", http.StatusNoContent, w)
+		services.SendResponse(services.Error, "no image found", http.StatusNoContent, w)
 		return 
 	}
 
@@ -77,14 +79,14 @@ func SearchImage(w http.ResponseWriter, r *http.Request) {
 	err := decoder.Decode(&searchRequest)
 
 	if err != nil {
-		services.SendRespone(services.Error, err.Error(), http.StatusBadRequest, w)
+		services.SendResponse(services.Error, err.Error(), http.StatusBadRequest, w)
 		return
 	}
 
 	_, isValidSearchType := searchTypes[searchRequest.Type]
 
 	if !isValidSearchType {
-		services.SendRespone(services.Error, "invalid search type", http.StatusBadRequest, w)
+		services.SendResponse(services.Error, "invalid search type", http.StatusBadRequest, w)
 		return
 	}
 

@@ -5,6 +5,7 @@ import (
 	"log"
 	"mime/multipart"
 	"net/http"
+	"os"
 
 	"github.com/SalikChodhary/shopify-challenge/models"
 	"github.com/pkg/errors"
@@ -35,6 +36,13 @@ func IsValidImage(f multipart.File) bool {
 	return true
 }
 
+func toLower(a []string) ([]string) {
+	for _, s := range a { 
+		s = strings.ToLower(s)
+	}
+	return a
+}
+
 func InitImageStruct(r *http.Request, file multipart.File, header *multipart.FileHeader) models.Image {
 	m := make(map[string]bool)
 	m["true"] = true
@@ -42,17 +50,15 @@ func InitImageStruct(r *http.Request, file multipart.File, header *multipart.Fil
 	bytes, _ := uuid.NewRandom()
 	uuid := bytes.String()
 	isPrivateStr := r.FormValue("private")
-	tags := strings.Split(r.FormValue("tags"), ",")
+	tags := toLower(strings.Split(r.FormValue("tags"), ","))
 
 	username := GetUserFromHeader(r)
-
-	// u, _ := IsExistingUsername(username)
-
 
 	var img models.Image
 	img.Key = uuid
 	img.Owner = username
 	img.Tags = tags
+	img.URI = "https://" + os.Getenv("S3_BUCKET_NAME") + ".s3." + os.Getenv("REGION_NAME") + ".amazonaws.com/" + img.Key
 
 	if isPrivateStr == "" {
 		img.Private = false
@@ -71,7 +77,7 @@ func InitImageStruct(r *http.Request, file multipart.File, header *multipart.Fil
 }
 
 func AppendAutoTagsToImage(img *models.Image) error {
-	s3URI := "https://salik-test-bucket.s3.us-east-2.amazonaws.com/" + img.Key
+	s3URI := img.URI
 	tags, err := getImageTags(s3URI)
 
 	if err != nil {
