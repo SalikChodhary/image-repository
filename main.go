@@ -20,6 +20,7 @@ func main() {
 	router.Handle("/api/v1/search", middleware.IsJWTAuthorized(routes.SearchImage)).Methods("GET")
 	router.HandleFunc("/login", routes.Login).Methods("POST")
 	router.HandleFunc("/signup", routes.Signup).Methods("POST")
+	router.PathPrefix("/").HandlerFunc(routes.Invalid)
 
 	fmt.Println("Server listening on port " + os.Getenv("PORT"))
 
