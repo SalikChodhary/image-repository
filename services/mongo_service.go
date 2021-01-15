@@ -2,6 +2,7 @@ package services
 
 import (
 	"context"
+	"os"
 	"sync"
 
 	"github.com/SalikChodhary/shopify-challenge/models"
@@ -20,7 +21,7 @@ func InitiateMongoClient() (error) {
 	var err error = nil
 	once.Do(func() {
 		var localErr error
-		uri := "mongodb+srv://admin:dbtest@cluster0.xplun.mongodb.net/ShopifyChallenge?retryWrites=true&w=majority"
+		uri := "mongodb+srv://"+os.Getenv("MONGO_USER")+":"+os.Getenv("MONGO_PASSWORD")+"@cluster0.xplun.mongodb.net/"+os.Getenv("DB_NAME")+"?retryWrites=true&w=majority"
 		opts := options.Client()
 		opts.ApplyURI(uri)
 		if client, localErr = mongo.Connect(context.Background(), opts); localErr != nil {

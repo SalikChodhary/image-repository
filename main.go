@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/SalikChodhary/shopify-challenge/middleware"
 	"github.com/SalikChodhary/shopify-challenge/routes"
@@ -20,7 +21,7 @@ func main() {
 	router.HandleFunc("/login", routes.Login).Methods("POST")
 	router.HandleFunc("/signup", routes.Signup).Methods("POST")
 
-	fmt.Println("Server listening on port 8000")
+	fmt.Println("Server listening on port " + os.Getenv("PORT"))
 
-	log.Fatal(http.ListenAndServe(":8000", router))
+	log.Fatal(http.ListenAndServe(":" + os.Getenv("PORT"), router))
 }

@@ -1,15 +1,17 @@
 package services
 
-import(
+import (
+	"bytes"
+	"errors"
+	"mime/multipart"
+	"net/http"
+	"os"
+	"sync"
+
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/s3"	
-	"sync"
-	"errors"
-	"net/http"
-	"mime/multipart"
-	"bytes"
+	"github.com/aws/aws-sdk-go/service/s3"
 )
 
 var instance *session.Session 
@@ -28,8 +30,8 @@ func initS3Session()  {
 	instance, err = session.NewSession(&aws.Config{
 		Region: aws.String("us-east-2"),
 		Credentials: credentials.NewStaticCredentials(
-			"AKIA4HC7N7LSXF3OUOOY", // id
-			"+fJg8oqmYCS1od/XvfHkWVbeOG1qhl1ol6DGBkbE",   // secret
+			os.Getenv("AWS_ID"), // id
+			os.Getenv("AWS_SECRET"),   // secret
 			""),  // token can be left blank for now
 	})
 }

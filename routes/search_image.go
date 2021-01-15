@@ -2,7 +2,6 @@ package routes
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 
 	"github.com/SalikChodhary/shopify-challenge/models"
@@ -17,15 +16,7 @@ var searchTypes map[string]struct{} = map[string]struct{}{
 }
 
 func sendResponse(res interface{}, w http.ResponseWriter) {
-	j, err := json.Marshal(res)
-
-	if err != nil {
-		services.SendResponse(services.Error, "internal error", http.StatusInternalServerError, w)
-		return
-	}
-	fmt.Println(string(j))
-
-	services.SendResponse(services.Success, string(j), http.StatusOK, w)
+	services.SendResponse(services.Success, res, http.StatusOK, w)
 }
 
 func handleByIDRequest(id string, user string, w http.ResponseWriter)  {
@@ -36,7 +27,7 @@ func handleByIDRequest(id string, user string, w http.ResponseWriter)  {
 		return 
 	}
 
-	sendResponse(res, w)
+	services.SendResponse(services.Success, res, http.StatusOK, w)
 }
 
 func handleByTagsRequest(tags []string, user string, w http.ResponseWriter) {
@@ -47,7 +38,7 @@ func handleByTagsRequest(tags []string, user string, w http.ResponseWriter) {
 		return 
 	}
 
-	sendResponse(res, w)
+	services.SendResponse(services.Success, res, http.StatusOK, w)
 }
 
 func handleByUserRequest(requestingUser string, requestedUser string, w http.ResponseWriter) {
@@ -58,7 +49,7 @@ func handleByUserRequest(requestingUser string, requestedUser string, w http.Res
 		return 
 	}
 
-	sendResponse(res, w)
+	services.SendResponse(services.Success, res, http.StatusOK, w)
 }
 
 func handleGetAllRequest(user string, w http.ResponseWriter) {
@@ -69,7 +60,7 @@ func handleGetAllRequest(user string, w http.ResponseWriter) {
 		return 
 	}
 
-	sendResponse(res, w)
+	services.SendResponse(services.Success, res, http.StatusOK, w)
 }
 
 func SearchImage(w http.ResponseWriter, r *http.Request) {

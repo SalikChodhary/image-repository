@@ -2,7 +2,6 @@ package services
 
 import (
 	"log"
-
 )
 
 func InitServices() {

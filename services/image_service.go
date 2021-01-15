@@ -5,12 +5,10 @@ import (
 	"log"
 	"mime/multipart"
 	"net/http"
-	"os"
 
 	"github.com/SalikChodhary/shopify-challenge/models"
 	"github.com/pkg/errors"
 
-	// "go.mongodb.org/mongo-driver/x/mongo/driver/uuid"
 	"strings"
 
 	"github.com/google/uuid"
@@ -19,6 +17,7 @@ import (
 const (
 	maxSize = 2048000
 	formDataImageKey = "img"
+	uriPrefix = "https://salik-test-bucket.s3.us-east-2.amazonaws.com/"
 )
 
 func ParseImageDataFromRequest(r *http.Request) (multipart.File, *multipart.FileHeader, error) {
@@ -58,7 +57,7 @@ func InitImageStruct(r *http.Request, file multipart.File, header *multipart.Fil
 	img.Key = uuid
 	img.Owner = username
 	img.Tags = tags
-	img.URI = "https://" + os.Getenv("S3_BUCKET_NAME") + ".s3." + os.Getenv("REGION_NAME") + ".amazonaws.com/" + img.Key
+	img.URI = uriPrefix + img.Key
 
 	if isPrivateStr == "" {
 		img.Private = false
