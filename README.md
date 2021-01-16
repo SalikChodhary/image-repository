@@ -17,7 +17,7 @@ Submission for Shopify Challenge hosted at: [ec2-18-223-98-111.us-east-2.compute
   * Users must create an account
   * Users are given a **JWT token** if they can **login**, that expires every **1 hour**
   * They must pass the given JWT Token with every request, to gain access to the data
-  * User and passwords(**after hashing and salting**) are stored in MongoDB
+  * Passwords are only stored in DB, after being hashed and salted
   
  #### Deployment 
   * Deployed in a **Linux AWS EC2** instance
