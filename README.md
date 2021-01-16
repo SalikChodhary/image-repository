@@ -1,6 +1,6 @@
 # Shopify Challenge Backend & SRE Summer 2021 Challenge
 
-Submission for Shopify Challenge hosted at: [ec2-18-191-146-168.us-east-2.compute.amazonaws.com](https://ec2-18-191-146-168.us-east-2.compute.amazonaws.com). The goal of the challenge was to build a image repository, I chose to build a REST API with the following features:
+Submission for Shopify Challenge hosted at: [ec2-18-223-98-111.us-east-2.compute.amazonaws.com](https://ec2-18-223-98-111.us-east-2.compute.amazonaws.com). The goal of the challenge was to build a image repository, I chose to build a REST API with the following features:
 #### Search for image(s)
   * By Text; in the form of tags
   * By ID; ID is automatically generated for every image that is added to the repo
