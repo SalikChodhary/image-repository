@@ -10,7 +10,7 @@ func IsJWTAuthorized(handler func(http.ResponseWriter, *http.Request)) http.Hand
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		 
 		if !services.IsAuthorizedRequest(r) {
-			fmt.Fprintf(w, "Unauthorized access")
+			services.SendResponse(services.Error, "Unauthorized access.", http.StatusUnauthorized, w)
 			return
 		}
 		handler(w, r)

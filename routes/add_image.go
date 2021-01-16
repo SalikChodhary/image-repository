@@ -24,11 +24,11 @@ func AddImage(w http.ResponseWriter, r *http.Request) {
 	}
 
 	err = services.AppendAutoTagsToImage(&image)
-	res, err := services.InsertNewImageToMongo(image)
+	_, err := services.InsertNewImageToMongo(image)
 
 	if err != nil {
 		services.SendResponse(services.Error, "could not upload file", http.StatusInternalServerError, w)
 	}
 
-	services.SendResponse(services.Success, string(res), http.StatusOK, w)
+	services.SendResponse(services.Success, image, http.StatusOK, w)
 }
