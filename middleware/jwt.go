@@ -2,7 +2,6 @@ package middleware
 
 import (
 	"net/http"
-	"fmt"
 	"github.com/SalikChodhary/shopify-challenge/services"
 )
 
